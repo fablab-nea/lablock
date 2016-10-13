@@ -1,0 +1,26 @@
+raspi-config
+locale-gen
+
+apt-get update
+apt-get dist-upgrade
+apt-get install vim-nox
+
+sed -i 's/^slaac.*$/slaac hardware/' /etc/dhcpcd.conf
+
+sed -i 's/^RSAAuthentication.*$/RSAAuthentication no/' /etc/ssh/sshd_config
+cat >> /etc/ssh/sshd_config << EOF
+
+Match User door
+    ForceCommand /usr/local/bin/door
+
+EOF
+
+systemctl restart ssh
+
+useradd -m -G door door
+
+mkdir ~door/.ssh
+touch ~door/.ssh/authorized_keys
+chown -R door:door ~door
+
+
